@@ -35,14 +35,19 @@ async def add_analyzes(
 
     response_content = await result(file_content, file_extension, lang)
 
-    pattern = r'\((\d/\d/\d/\d/\d/\d/\d)\)\|\((\d/\d/\d/\d/\d/\d/\d/\d/\d)\)'
-    match = re.search(pattern, response_content)
+    text_content = response_content.result.candidates[0].content.parts[0].text.strip()
+
+    if text_content.endswith('\n'):
+        text_content = text_content[:-1]
+
+    pattern = r'\d/\d/\d/\d/\d/\d/\d)\|(\d/\d/\d/\d/\d/\d/\d/\d/\d'
+    match = re.search(pattern, text_content)
 
     if match:
         extracted_response = match.group(0)
         dep, anx = extracted_response.split('|')
-        dep_results = [int(res) for res in dep[1:-1].split('/')]
-        anx_results = [int(res) for res in anx[1:-1].split('/')]
+        dep_results = [int(res) for res in dep.split('/')]
+        anx_results = [int(res) for res in anx.split('/')]
         if all(dep_results) == 0 and all(anx_results) == 0:
             raise HTTPException(status_code=404, detail="GPT-Error, try again upload file")
         total_dep = sum(dep_results)

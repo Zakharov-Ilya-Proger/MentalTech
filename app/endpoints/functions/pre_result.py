@@ -24,5 +24,4 @@ async def result(file_content, file_extension, lang):
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
     chatgpt_response = await gmn_prompt(text_from_file)
-    print(chatgpt_response)
     return chatgpt_response
