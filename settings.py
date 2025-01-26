@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     DB_PORT: int = os.getenv("DB_PORT")
 
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
-    API_KEY: str = os.getenv("GPT_API_KEY")
+    GPT_API_KEY: str = os.getenv("GPT_API_KEY")
+    API_TRANSLATER_KEY: str = os.getenv("API_TRANSLATER_KEY")
 
     class Config:
         env_file = ".env"
