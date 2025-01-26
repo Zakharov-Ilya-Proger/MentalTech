@@ -5,7 +5,7 @@ import LightPlus from "../Assets/plus.svg"
 import ClientAddForm from '../Components/ClientAddForm';
 import AnalysisAddForm from '../Components/AnalysisAddForm';
 
-// Function to get the token from the cookie
+
 const getTokenFromCookie = () => {
     const name = "authToken=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -97,7 +97,7 @@ function Chats({ isLightTheme, selectedLanguage }) {
     const fetchClients = () => {
         const token = getTokenFromCookie();
         setIsLoading(true);
-        fetch('http://127.0.0.1:8000/clients/get', {
+        fetch('https://metaltech.onrender.com/clients/get', {
             headers: {
                 'Authorization': token
             }
@@ -116,7 +116,7 @@ function Chats({ isLightTheme, selectedLanguage }) {
     const fetchAnalyses = (clientId) => {
         const token = getTokenFromCookie();
         setIsAnalysisLoading(true);
-        fetch(`http://127.0.0.1:8000/analyses/get/${clientId}`, {
+        fetch(`https://metaltech.onrender.com/analyses/get/${clientId}`, {
             headers: {
                 'Authorization': token
             }

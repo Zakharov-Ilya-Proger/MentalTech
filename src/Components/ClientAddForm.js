@@ -3,7 +3,7 @@ import './CSS/ClientAddForm.css';
 import closeIcon from '../Assets/VectorLight.svg';
 import closeIconDark from '../Assets/Vector.svg';
 
-// Function to get the token from the cookie
+
 const getTokenFromCookie = () => {
     const name = "authToken=";
     const decodedCookie = decodeURIComponent(document.cookie);

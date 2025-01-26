@@ -1,4 +1,3 @@
-// RegisterForm.js
 import React, { useState } from 'react';
 import './CSS/RegisterForm.css';
 import closeIcon from "../Assets/VectorLight.svg";
@@ -36,7 +35,7 @@ const RegisterForm = ({ isLightTheme, closeForms, toggleToLogin, handleLogin }) 
             });
             const data = await response.json();
             if (response.ok) {
-                handleLogin(data.token); // Сохраняем токен в куки
+                handleLogin(data.token);
                 setError('');
                 closeForms();
             } else {

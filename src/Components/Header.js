@@ -1,4 +1,3 @@
-// Header.js
 import React, { useRef, useEffect, useState } from 'react';
 import './CSS/Header.css';
 import logo from '../Assets/Logo.svg';

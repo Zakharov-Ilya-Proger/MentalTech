@@ -1,4 +1,3 @@
-// DropdownMenu.js
 import React from 'react';
 import './CSS/DropdownMenu.css';
 

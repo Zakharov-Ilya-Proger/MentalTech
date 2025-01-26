@@ -1,4 +1,3 @@
-// LoginForm.js
 import React, { useState } from 'react';
 import './CSS/LoginForm.css';
 import closeIcon from '../Assets/VectorLight.svg';

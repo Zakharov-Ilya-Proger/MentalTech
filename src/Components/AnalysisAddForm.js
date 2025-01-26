@@ -41,7 +41,7 @@ const AnalysisAddForm = ({ isLightTheme, closeForms, clientId, fetchAnalyses }) 
 
         // Handle add analysis logic here
         try {
-            const response = await fetch(`http://127.0.0.1:8000/analyses/add/${clientId}/${date}/${selectedLanguage}`, {
+            const response = await fetch(`https://metaltech.onrender.com/analyses/add/${clientId}/${date}/${selectedLanguage}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': token
