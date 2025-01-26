@@ -178,7 +178,7 @@
 
 @media (max-width: 480px) {
     .register-form-container {
-        width: 50%;
+        width: 75%;
         height: auto;
         padding: 10px;
     }
