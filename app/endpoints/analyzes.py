@@ -41,7 +41,7 @@ async def add_analyzes(
     if text_content.endswith('\n'):
         text_content = text_content[:-1]
 
-    pattern = r'\d/\d/\d/\d/\d/\d/\d)\|(\d/\d/\d/\d/\d/\d/\d/\d/\d'
+    pattern = r'\d/\d/\d/\d/\d/\d/\d\|\d/\d/\d/\d/\d/\d/\d/\d/\d'
     match = re.search(pattern, text_content)
 
     if match:
