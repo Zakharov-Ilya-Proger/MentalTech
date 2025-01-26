@@ -2,7 +2,7 @@ from io import BytesIO
 from docx import Document
 from fastapi import HTTPException
 from vosk import Model
-from app.endpoints.functions.mistral import send_prompt
+from app.endpoints.functions.mistral import send_prompt, gmn_prompt
 from app.endpoints.functions.wav_mp3 import wav, mp3
 
 
@@ -23,5 +23,5 @@ async def result(file_content, file_extension, lang):
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
-    chatgpt_response = await send_prompt(text_from_file)
+    chatgpt_response = await gmn_prompt(text_from_file)
     return chatgpt_response['choices'][0]['message']['content']

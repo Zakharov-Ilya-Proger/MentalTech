@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
     GPT_API_KEY: str = os.getenv("GPT_API_KEY")
-    API_TRANSLATER_KEY: str = os.getenv("API_TRANSLATER_KEY")
+    GMN_API_KEY: str = os.getenv("GMN_API_KEY")
 
     class Config:
         env_file = ".env"
