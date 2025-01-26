@@ -3,7 +3,6 @@ from fastapi import APIRouter, Header, HTTPException, UploadFile, File
 from app.db.analyzes import db_get_analyzes, db_add_analyse
 from app.endpoints.functions.pre_result import result
 import re
-from vosk import Model
 
 analyzes = APIRouter()
 

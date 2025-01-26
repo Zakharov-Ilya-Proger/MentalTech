@@ -30,7 +30,7 @@ async def db_get_analyzes(client_id):
         conn.close()
 
 async def db_add_analyse(
-        date: str,  # Change to str
+        date: str,
         client_id: int,
         dep_results: list,
         total_dep: int,
