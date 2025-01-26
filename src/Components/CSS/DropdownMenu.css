@@ -1,0 +1,136 @@
+/* CSS/DropdownMenu.css */
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 73px;
+    right: 120px;
+    background: #D1D1D1;
+    box-shadow: 0 1.5px 0 0 rgba(125, 175, 255, 1);
+    border-radius: 8px;
+    width: 200px;
+    height: 250px;
+    transform: translateY(-160%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.dropdown-menu.open {
+    transform: translateY(0);
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.dropdown-menu li {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background: #f0f0f0;
+}
+
+.menu-item {
+    border-radius: 10px;
+    display: flex;
+    width: 130px;
+    height: 50px;
+    padding: 0 10px;
+    justify-content: space-between;
+    align-items: center;
+    background: #e8e6e6;
+    box-shadow: 0 1.5px 0 0 rgba(125, 175, 255, 1);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #FFBC7D;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #FF9736;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #7DAFFF;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+    background-color: #0073FF;
+}
+
+.dropdown-menu select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.menu-item-log-out {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 100px;
+    background-color: #7DAFFF;
+    margin: 10px auto;
+    box-shadow: 0 1.5px 0 0 rgba(0, 115, 255, 1);
+}
+
+.dropdown-menu.dark {
+    background: #3A3A3A;
+    color: #EDEDED;
+    box-shadow: 0 1.5px 0 0 rgba(255, 188, 125, 1);
+}
+
+.dropdown-menu.dark li:hover {
+    background: #3A3A3A;
+}
+
+.menu-item.dark{
+    background: #272727;
+    box-shadow: 0 1.5px 0 0 rgba(255, 188, 125, 1);
+}
+
+.dropdown-menu.dark .menu-item-log-out {
+    background-color: #FF9736;
+    box-shadow: 0 1.5px 0 0 rgba(255, 188, 125, 1);
+}

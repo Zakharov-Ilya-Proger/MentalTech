@@ -1,0 +1,102 @@
+/* CSS/Header.css */
+.header-container {
+    padding: 0 22px;
+    background: #D1D1D1;
+    max-width: 100%;
+    height: 70px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 1.5px 0 0 rgba(57, 57, 57, 0.46);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-container.dark {
+    background: #262626;
+    box-shadow: 0 1.5px 0 0 rgba(182, 182, 182, 0.46);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
+.text-logo {
+    margin-left: 5px;
+    font-size: 28px;
+    font-family: Inter, sans-serif;
+}
+
+.text-logo.dark {
+    color: #EDEDED;
+}
+
+.header-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 70px;
+}
+
+.login-signup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0073FF;
+    color: #EDEDED;
+    border-radius: 8px;
+    padding: 0 15px;
+    height: 40px;
+    cursor: pointer;
+    width: 100px;
+    box-sizing: border-box;
+}
+
+.login-signup:hover {
+    background-color: #004baf;
+}
+
+.login-signup.dark:hover {
+    background-color: #c57426;
+}
+
+.login-signup.dark {
+    background-color: #FF9736;
+    color: #272727;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.settings {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.header-logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.header-logo-link:hover {
+    text-decoration: none;
+}
+
+.form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
