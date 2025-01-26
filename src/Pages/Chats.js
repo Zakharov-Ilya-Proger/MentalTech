@@ -5,7 +5,6 @@ import LightPlus from "../Assets/plus.svg"
 import ClientAddForm from '../Components/ClientAddForm';
 import AnalysisAddForm from '../Components/AnalysisAddForm';
 
-
 const getTokenFromCookie = () => {
     const name = "authToken=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -93,6 +92,7 @@ function Chats({ isLightTheme, selectedLanguage }) {
     const [selectedAnalysis, setSelectedAnalysis] = useState(null);
     const [showAnalysisForm, setShowAnalysisForm] = useState(false);
     const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+    const [isMobileView, setIsMobileView] = useState(false);
 
     const fetchClients = () => {
         const token = getTokenFromCookie();
@@ -135,6 +135,19 @@ function Chats({ isLightTheme, selectedLanguage }) {
 
     useEffect(() => {
         fetchClients();
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth <= 768); // Adjust the breakpoint as needed
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial check
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     const handlePointClick = (index) => {
@@ -188,6 +201,88 @@ function Chats({ isLightTheme, selectedLanguage }) {
             </table>
         );
     };
+
+    if (isMobileView) {
+        return (
+            <div className={`chats ${isLightTheme ? '' : 'dark'} mobile`}>
+                <div className="chats-points-container mobile">
+                    <div className="chats-points mobile">
+                        <img src={isLightTheme ? LightPlus : darkPlus} className={'plus'} alt={'plus'} onClick={toggleAddForm} />
+                        {isLoading ? (
+                            <div className="loading-spinner"></div>
+                        ) : (
+                            <ul>
+                                {clients.map((client, index) => (
+                                    <li
+                                        key={client.id}
+                                        onClick={() => handlePointClick(index)}
+                                        className={selectedPoint === index ? 'selected' : ''}
+                                    >
+                                        {client.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                    {selectedClient && (
+                        <div className="analyses-points mobile">
+                            <img src={isLightTheme ? LightPlus : darkPlus} className={'plus'} alt={'plus'} onClick={toggleAnalysisForm} />
+                            {isAnalysisLoading ? (
+                                <div className="loading-spinner"></div>
+                            ) : (
+                                <ul>
+                                    {analyses.map((analysis) => (
+                                        <li
+                                            key={analysis.id}
+                                            onClick={() => handleAnalysisClick(analysis)}
+                                            className={selectedAnalysis && selectedAnalysis.id === analysis.id ? 'selected' : ''}
+                                        >
+                                            {new Date(analysis.date).toLocaleString()}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
+                </div>
+                <div className="chats-item mobile">
+                    {selectedAnalysis ? (
+                        <div>
+                            <h2>Analysis Details</h2>
+                            <p>Date: {new Date(selectedAnalysis.date).toLocaleString()}</p>
+                            <p>Anxiety Total: {selectedAnalysis.dep_total}</p>
+                            <p>Anxiety Classification: {getAnxietyClassification(selectedAnalysis.dep_total)}</p>
+                            <h3>Anxiety Status:</h3>
+                            {renderTable(questionsGAD7[selectedLanguage], selectedAnalysis.dep_stat)}
+                            <p>Depression Total: {selectedAnalysis.anx_total}</p>
+                            <p>Depression Classification: {getDepressionClassification(selectedAnalysis.anx_total)}</p>
+                            <h3>Depression Status:</h3>
+                            {renderTable(questionsPHQ9[selectedLanguage], selectedAnalysis.anx_stat)}
+                        </div>
+                    ) : (
+                        <div>
+                            <h2>Select an analysis or upload a new one</h2>
+                        </div>
+                    )}
+                </div>
+                {showAddForm && (
+                    <ClientAddForm
+                        isLightTheme={isLightTheme}
+                        closeForms={toggleAddForm}
+                        handleAddClient={handleAddClient}
+                    />
+                )}
+                {showAnalysisForm && (
+                    <AnalysisAddForm
+                        isLightTheme={isLightTheme}
+                        closeForms={toggleAnalysisForm}
+                        clientId={selectedClient.id}
+                        fetchAnalyses={fetchAnalyses}
+                    />
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className={`chats ${isLightTheme ? '' : 'dark'}`}>

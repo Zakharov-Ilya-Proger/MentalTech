@@ -13,7 +13,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     width: 470px;
-    min-height: 400px;
+    min-height: auto;
 }
 
 .loading-spinner {
@@ -195,4 +195,65 @@
 
 .analysis-add-form-container.dark .file-note{
     color: rgba(255, 188, 125, 1);
+}
+
+@media (max-width: 768px) {
+    .analysis-add-form-container {
+        width: 70%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .close-icon{
+        width: 25px;
+        margin: 5px;
+    }
+
+    .form-header {
+        width: 70%;
+        height: 50px;
+        font-size: 24px;
+    }
+
+    .analysis-add-form-container .form-group input,
+    .analysis-add-form-container .form-group textarea {
+        width: 100%;
+    }
+
+    .analysis-add-form-container button {
+        width: 70%;
+    }
+}
+
+@media (max-width: 480px) {
+    .analysis-add-form-container {
+        width: 70%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .close-icon{
+        width: 25px;
+        margin: 5px;
+    }
+
+    .form-header {
+        font-size: 20px;
+        width: 70%;
+    }
+
+    .analysis-add-form-container .form-group label {
+        font-size: 16px;
+    }
+
+    .analysis-add-form-container .form-group input,
+    .analysis-add-form-container .form-group textarea {
+        font-size: 16px;
+        height: 48px;
+    }
+
+    .analysis-add-form-container button {
+        font-size: 16px;
+        height: 40px;
+    }
 }

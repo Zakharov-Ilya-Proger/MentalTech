@@ -164,12 +164,15 @@
     margin-top: 0;
 }
 
+.chats.mobile{
+    height: auto;
+}
+
 .chats.dark .chats-points li, .chats.dark .analyses-points li {
     background-color: #444;
     border-radius: 10px;
     border-bottom: 1px solid #FF7A00;
 }
-
 
 .chats-points::-webkit-scrollbar, .analyses-points::-webkit-scrollbar {
     width: 12px;
@@ -203,7 +206,6 @@
     background: #e65c00;
 }
 
-/* Styles for the analysis table */
 .analysis-table {
     width: 100%;
     border-collapse: collapse;
@@ -216,7 +218,6 @@
     text-align: center;
 }
 
-
 .analysis-table td.checked {
     color: #0073FF;
     font-weight: bold;
@@ -224,4 +225,38 @@
 
 .chats.dark .analysis-table td.checked {
     color: #FF9736;
+}
+
+/* Mobile styles */
+.chats.mobile {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.chats-points-container.mobile {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0 20px 0 ;
+}
+
+.chats-points.mobile, .analyses-points.mobile {
+    width: 45%;
+    margin-right: 10px;
+}
+
+.chats-item.mobile {
+    margin: 0 0 15px 0;
+    width: 90%;
+    height: 100%;
+}
+
+.chats-item.mobile .analysis-table {
+   height: 100%;
+}
+
+.chats.mobile{
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

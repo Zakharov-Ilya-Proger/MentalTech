@@ -82,7 +82,7 @@ const App = () => {
                         <Main
                             isLightTheme={isLightTheme}
                             selectedLanguage={selectedLanguage}
-                            handleLogin={handleLogin} // Передаем функцию handleLogin
+                            handleLogin={handleLogin}
                         />}
                     />
                     <Route path="/chats" element={

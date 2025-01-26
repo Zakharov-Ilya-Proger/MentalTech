@@ -13,12 +13,17 @@ function Header({ isLightTheme, toggleTheme, selectedLanguage, changeLanguage, i
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showLoginForm, setShowLoginForm] = useState(false);
     const [showRegisterForm, setShowRegisterForm] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const menuRef = useRef(null);
     const formRef = useRef(null);
     const location = useLocation();
 
     const toggleMenu = () => {
         setIsMenuOpen(prevState => !prevState);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(prevState => !prevState);
     };
 
     const handleClickOutside = (event) => {
@@ -91,6 +96,19 @@ function Header({ isLightTheme, toggleTheme, selectedLanguage, changeLanguage, i
                             <div className={`login-signup ${isLightTheme ? '' : 'dark'}`} onClick={handleRegisterClick}>
                                 <p>Sign Up</p>
                             </div>
+                            <div className="dropdown-menu" onClick={toggleDropdown}>
+                                <div className="menu-icon"></div>
+                            </div>
+                            {isDropdownOpen && (
+                                <div className="dropdown-content">
+                                    <div className={`dropdown-item ${isLightTheme ? '' : 'dark'}`} onClick={handleLoginClick}>
+                                        <p>Log In</p>
+                                    </div>
+                                    <div className={`dropdown-item ${isLightTheme ? '' : 'dark'}`} onClick={handleRegisterClick}>
+                                        <p>Sign Up</p>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <>

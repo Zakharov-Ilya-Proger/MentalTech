@@ -26,6 +26,12 @@
     align-self: end;
 }
 
+.form-group{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .close-icon.dark {
     color: #FF7A00;
 }
@@ -95,6 +101,8 @@
     margin-bottom: 10px;
 }
 
+
+
 .login-form-container button {
     width: 220px;
     height: 50px;
@@ -141,4 +149,96 @@
 .login-form-container.dark p span {
     color: #c1711c;
     cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .login-form-container {
+        width: 60%;
+        padding: 15px;
+    }
+
+    .login-form-container form {
+        margin-top: 10px;
+    }
+
+    .login-form-container .form-group {
+        margin-top: 5px;
+        width: 75%;
+    }
+
+    .login-form-container .form-header {
+        font-size: 4vw;
+        width: 70%;
+    }
+
+    .login-form-container .form-group label {
+        font-size: 3vw;
+    }
+
+    .login-form-container .form-group input {
+        font-size: 3vw;
+        width: 250px;
+    }
+
+    .login-form-container .error {
+        font-size: 3vw;
+    }
+
+    .login-form-container button {
+        font-size: 3vw;
+        width: 70%;
+    }
+
+    .login-form-container p {
+        font-size: 3vw;
+    }
+
+    .login-form-container p span {
+        font-size: 3vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-form-container {
+        width: 50%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .login-form-container .close-icon{
+        width: 25px;
+        margin: 5px;
+    }
+
+    .login-form-container .form-header {
+        font-size: 5vw;
+        height: 70px;
+    }
+
+    .login-form-container .form-group label {
+        font-size: 4vw;
+        width: 40%;
+    }
+
+    .login-form-container .form-group input {
+        font-size: 4vw;
+        width: 100%;
+        height: 90%;
+    }
+
+    .login-form-container .error {
+        font-size: 4vw;
+    }
+
+    .login-form-container button {
+        font-size: 4vw;
+    }
+
+    .login-form-container p {
+        font-size: 4vw;
+    }
+
+    .login-form-container p span {
+        font-size: 4vw;
+    }
 }
