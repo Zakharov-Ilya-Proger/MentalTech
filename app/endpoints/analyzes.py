@@ -35,7 +35,8 @@ async def add_analyzes(
 
     response_content = await result(file_content, file_extension, lang)
 
-    text_content = response_content.result.candidates[0].content.parts[0].text.strip()
+    text_content = response_content.text
+    print(text_content)
 
     if text_content.endswith('\n'):
         text_content = text_content[:-1]
