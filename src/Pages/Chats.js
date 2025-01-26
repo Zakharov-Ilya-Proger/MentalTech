@@ -177,14 +177,23 @@ function Chats({ isLightTheme, selectedLanguage }) {
         return (
             <table className="analysis-table">
                 <thead>
-                <tr>
-                    <th>№</th>
-                    <th>Вопрос</th>
-                    <th>Никогда (0)</th>
-                    <th>Несколько дней (1)</th>
-                    <th>Более половины дней (2)</th>
-                    <th>Почти каждый день (3)</th>
-                </tr>
+                {isMobileView ?
+                    <tr>
+                        <th>№</th>
+                        <th>Вопрос</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                    </tr>
+                    : <tr>
+                        <th>№</th>
+                        <th>Вопрос</th>
+                        <th>Никогда (0)</th>
+                        <th>Несколько дней (1)</th>
+                        <th>Более половины дней (2)</th>
+                        <th>Почти каждый день (3)</th>
+                    </tr>}
                 </thead>
                 <tbody>
                 {questions.map((question, index) => (

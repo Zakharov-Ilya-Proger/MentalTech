@@ -264,3 +264,27 @@
 .chats-points-container.mobile {
     width: 96%;
 }
+
+@media (max-width: 480px) {
+    .chats-points.mobile {
+        padding: 10px;
+        margin: 0;
+        font-size: 15px;
+    }
+    .chats-points.mobile li{
+        font-size: 20px;
+    }
+
+    .analyses-points.mobile li{
+        font-size: 20px;
+    }
+    .analyses-points.mobile{
+        padding: 10px;
+        margin: 0;
+    }
+    .chats-item.mobile{
+        padding: 5px;
+        width: 95%;
+        font-size: 15px;
+    }
+}
