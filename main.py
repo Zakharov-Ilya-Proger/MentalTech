@@ -5,9 +5,7 @@ import telebot
 from telebot import types
 from dotenv import load_dotenv
 from vosk import Model
-import fcntl
-
-from send_to_ai import send_to_ai
+from send_to_ai import send_to_ai_mistral, send_to_ai
 from voice_to_text import transcribe_ogg
 
 load_dotenv()
@@ -18,19 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 bot = telebot.TeleBot(API_TOKEN)
 
-# Словарь для хранения состояния сессии для каждого пользователя
 user_sessions = {}
-
-# Файл блокировки для предотвращения запуска нескольких экземпляров бота
-lock_file_path = '/tmp/telegram_bot.lock'
-
-def acquire_lock():
-    lock_file = open(lock_file_path, 'w')
-    try:
-        fcntl.lockf(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        return lock_file
-    except IOError:
-        return None
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -73,6 +59,7 @@ def start_session(message):
     initial_prompt = f'''
         Работай в формате живой беседы, чтобы клиенту было комфортно. Ты задаёшь вопросы по одному, я отвечаю. После каждого ответа и перед тем как задавать новый вопрос, ты можешь выразить поддержку, используя навыки мотивационного интервью - простые и сложные отражения, в том числе поддержать изменяющую речь в отличие от сохраняющей, аффирмации и резюмирование. Завершай каждую такую терапевтическую реплику следующим вопросом.
         Есть 2 анкеты которые ты должен в результате заполнить, если понял, что тебе хватает данных, то верни (ответ на 1й вопрос/ответ на 2й вопрос/ответ на 3й вопрос/ответ на 4й вопрос/ответ на 5й вопрос/ответ на 6й вопрос/ответ на 7й вопрос)|(ответ на 1й вопрос/ответ на 2й вопрос/ответ на 3й вопрос/ответ на 4й вопрос/ответ на 5й вопрос/ответ на 6й вопрос/ответ на 7й вопрос/ответ на 8й вопрос/ответ на 9й вопрос).
+        Отправлять такой шаблон надо только когда подводишь итоги, и не нужно пугать человека выводя такое
         Вот анкеты которые надо по окончании заполнить:
         Никогда/ни разу = 0 очков, Несколько дней = 1, более половины дней/более недели = 2, почти каждый день = 3.
                         GAD-7
@@ -156,12 +143,5 @@ def process_answer(message, user_answer):
     user_sessions[user_id]["prompt"] = prompt
 
 if __name__ == '__main__':
-    lock_file = acquire_lock()
-    if lock_file:
-        logging.info(f"Starting bot on port {os.getenv('PORT', 8080)}")
-        try:
-            bot.polling()
-        finally:
-            lock_file.close()
-    else:
-        logging.error("Another instance of the bot is already running.")
+    logging.info(f"Starting bot on port {os.getenv('PORT', 8080)}")
+    bot.polling()

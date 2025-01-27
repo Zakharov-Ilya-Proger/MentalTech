@@ -24,4 +24,5 @@ def transcribe_ogg(file_content: bytes, model: Model) -> str:
             result_dict = json.loads(result)
             text_from_file += result_dict.get("text", "") + " "
     rec.FinalResult()
+    print(text_from_file)
     return text_from_file
