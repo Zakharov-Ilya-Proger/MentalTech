@@ -42,13 +42,25 @@ async def add_analyzes(
         text_content = text_content[:-1]
 
     pattern = r'\d/\d/\d/\d/\d/\d/\d\|\d/\d/\d/\d/\d/\d/\d/\d/\d'
+    second_pattern = r'(\d/\d/\d/\d/\d/\d/\d\)|(\d/\d/\d/\d/\d/\d/\d/\d/\d)'
     match = re.search(pattern, text_content)
+    second_match = re.search(second_pattern, text_content)
 
     if match:
         extracted_response = match.group(0)
         dep, anx = extracted_response.split('|')
         dep_results = [int(res) for res in dep.split('/')]
         anx_results = [int(res) for res in anx.split('/')]
+        if all(dep_results) == 0 and all(anx_results) == 0:
+            raise HTTPException(status_code=404, detail="GPT-Error, try again upload file")
+        total_dep = sum(dep_results)
+        total_anx = sum(anx_results)
+        await db_add_analyse(date, client_id, dep_results, total_dep, anx_results, total_anx)
+    elif second_match:
+        extracted_response = match.group(0)
+        dep, anx = extracted_response.split('|')
+        dep_results = [int(res) for res in dep[1:-1].split('/')]
+        anx_results = [int(res) for res in anx[1:-1].split('/')]
         if all(dep_results) == 0 and all(anx_results) == 0:
             raise HTTPException(status_code=404, detail="GPT-Error, try again upload file")
         total_dep = sum(dep_results)
