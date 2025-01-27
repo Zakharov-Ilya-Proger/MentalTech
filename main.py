@@ -108,7 +108,6 @@ def handle_voice(message):
 
     model = Model(path)
     user_answer = transcribe_ogg(file_path, model)
-    bot.send_message(user_id, f"Вы сказали: {user_answer}")
 
     process_answer(message, user_answer)
 
