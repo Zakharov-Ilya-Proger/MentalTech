@@ -7,19 +7,20 @@ from dotenv import load_dotenv
 from vosk import Model
 from send_to_ai import send_to_ai, send_to_ai_mistral
 from voice_to_text import transcribe_ogg
-import redis
+from supabase import create_client, Client
 
 load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
-REDIS_URL = os.getenv("REDIS_URL")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 logging.basicConfig(level=logging.INFO)
 
 bot = telebot.TeleBot(API_TOKEN)
 
-# Подключение к Redis
-redis_client = redis.StrictRedis.from_url(REDIS_URL)
+# Подключение к Supabase
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -35,8 +36,8 @@ def process_language_selection(call):
     language = call.data.split('_')[1]
     photo_path = './assets/Logo.png'
 
-    # Сохранение языка в Redis
-    redis_client.hset(f"user:{user_id}", "lang", language)
+    # Сохранение языка в Supabase
+    supabase.table('user_sessions').upsert({"user_id": user_id, "language": language}).execute()
 
     if language == 'en':
         hello_text = "Welcome! I'm a MenTi bot! The guys from Mental Tech made me, my main task is to help you determine your condition unambiguously. In order for me to help you, you need to start the session) Answer a few questions and I can help you"
@@ -51,7 +52,8 @@ def process_language_selection(call):
 @bot.message_handler(commands=['session'])
 def start_session(message):
     user_id = message.from_user.id
-    language = redis_client.hget(f"user:{user_id}", "lang").decode('utf-8')
+    response = supabase.table('user_sessions').select("language").eq('user_id', user_id).execute()
+    language = response.data[0]['language']
 
     if language == 'en':
         text = "Let's start the session. Please answer the following questions."
@@ -60,16 +62,17 @@ def start_session(message):
 
     bot.send_message(user_id, text)
 
-    prompt = "говори на" + str(language)
+    prompt = "говори на следующем языке: " + str(language)
     ai_response = send_to_ai(prompt)
     send_long_message(user_id, ai_response)
 
-    redis_client.hset(f"user:{user_id}", "prompt", "")
+    supabase.table('user_sessions').upsert({"user_id": user_id, "prompt": ""}).execute()
 
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
     user_id = message.from_user.id
-    language = redis_client.hget(f"user:{user_id}", "lang").decode('utf-8')
+    response = supabase.table('user_sessions').select("language").eq('user_id', user_id).execute()
+    language = response.data[0]['language']
 
     file_info = bot.get_file(message.voice.file_id)
     file_path = bot.download_file(file_info.file_path)
@@ -91,10 +94,11 @@ def handle_text(message):
 
 def process_answer(message, user_answer):
     user_id = message.from_user.id
-    language = redis_client.hget(f"user:{user_id}", "lang").decode('utf-8')
-    prompt = redis_client.hget(f"user:{user_id}", "prompt").decode('utf-8')
+    response = supabase.table('user_sessions').select("language, prompt").eq('user_id', user_id).execute()
+    language = response.data[0]['language']
+    prompt = response.data[0]['prompt']
 
-    full_prompt = "говори на " + str(language) + prompt + f"\nПользователь: {user_answer}"
+    full_prompt = prompt + f"\nПользователь: {user_answer}"
 
     ai_response = send_to_ai(full_prompt)
     send_long_message(user_id, ai_response)
@@ -113,7 +117,7 @@ def process_answer(message, user_answer):
         bot.send_message(user_id, text)
 
     prompt += f"\nПользователь: {user_answer}\nИИ: {ai_response}"
-    redis_client.hset(f"user:{user_id}", "prompt", prompt)
+    supabase.table('user_sessions').upsert({"user_id": user_id, "prompt": prompt}).execute()
 
 def send_long_message(user_id, message):
     max_length = 4096
