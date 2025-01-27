@@ -5,7 +5,6 @@ import telebot
 from telebot import types
 from dotenv import load_dotenv
 from vosk import Model
-from init_prompt import initial_prompt
 from send_to_ai import send_to_ai, send_to_ai_mistral
 from voice_to_text import transcribe_ogg
 import redis
@@ -61,8 +60,8 @@ def start_session(message):
 
     bot.send_message(user_id, text)
 
-    prompt = initial_prompt + str(language)
-    ai_response = send_to_ai_mistral(prompt)
+    prompt = "говори на" + str(language)
+    ai_response = send_to_ai(prompt)
     send_long_message(user_id, ai_response)
 
     redis_client.hset(f"user:{user_id}", "prompt", "")
@@ -95,9 +94,9 @@ def process_answer(message, user_answer):
     language = redis_client.hget(f"user:{user_id}", "lang").decode('utf-8')
     prompt = redis_client.hget(f"user:{user_id}", "prompt").decode('utf-8')
 
-    full_prompt = initial_prompt + str(language) + prompt + f"\nПользователь: {user_answer}"
+    full_prompt = "говори на " + str(language) + prompt + f"\nПользователь: {user_answer}"
 
-    ai_response = send_to_ai_mistral(full_prompt)
+    ai_response = send_to_ai(full_prompt)
     send_long_message(user_id, ai_response)
 
     pattern = r'\d/\d/\d/\d/\d/\d/\d\|\d/\d/\d/\d/\d/\d/\d/\d/\d'
@@ -113,7 +112,6 @@ def process_answer(message, user_answer):
 
         bot.send_message(user_id, text)
 
-    # Сохраняем только ответы пользователя и вопросы от ИИ в Redis
     prompt += f"\nПользователь: {user_answer}\nИИ: {ai_response}"
     redis_client.hset(f"user:{user_id}", "prompt", prompt)
 
