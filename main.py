@@ -1,8 +1,4 @@
-import json
-import wave
-from io import BytesIO
-import soundfile as sf
-from vosk import KaldiRecognizer, Model
+from vosk import Model
 import logging
 import os
 import re
@@ -13,6 +9,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from dotenv import load_dotenv
 
+from send_to_ai import send_to_ai
+from voice_to_text import transcribe_wav, transcribe_mp3
+
 load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
@@ -22,59 +21,10 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# Словарь для хранения выбора языка пользователей
 user_language = {}
 
-# Определяем состояния для сессии
 class SessionStates(StatesGroup):
     waiting_for_question = State()
-
-# Функция для отправки запроса к ИИ
-async def send_to_ai(prompt: str) -> str:
-    # Здесь должна быть логика для отправки запроса к ИИ
-    # Например, вызов API или использование локального модели
-    # Для примера вернем фиктивный ответ
-    return "Вопрос: Как вы себя чувствуете сегодня?"
-
-# Функция для расшифровки WAV файла
-async def transcribe_wav(file_content: bytes, model: Model) -> str:
-    wf = wave.open(BytesIO(file_content), "rb")
-    rec = KaldiRecognizer(model, wf.getframerate())
-    rec.SetWords(True)
-    text_from_file = ""
-    while True:
-        data = wf.readframes(4000)
-        if len(data) == 0:
-            break
-        if rec.AcceptWaveform(data):
-            result = rec.Result()
-            result_dict = json.loads(result)
-            text_from_file += result_dict.get("text", "") + " "
-    rec.FinalResult()
-    return text_from_file
-
-# Функция для расшифровки MP3 файла
-async def transcribe_mp3(file_content: bytes, model: Model) -> str:
-    data, samplerate = sf.read(BytesIO(file_content))
-    wav_buffer = BytesIO()
-    sf.write(wav_buffer, data, samplerate, format='WAV')
-    wav_buffer.seek(0)
-
-    wf = wave.open(wav_buffer, "rb")
-    rec = KaldiRecognizer(model, wf.getframerate())
-    rec.SetWords(True)
-
-    text_from_file = ""
-    while True:
-        data = wf.readframes(4000)
-        if len(data) == 0:
-            break
-        if rec.AcceptWaveform(data):
-            result = rec.Result()
-            result_dict = json.loads(result)
-            text_from_file += result_dict.get("text", "") + " "
-    rec.FinalResult()
-    return text_from_file
 
 @dp.message(Command(commands=['start']))
 async def send_welcome(message: types.Message):
@@ -116,7 +66,36 @@ async def start_session(message: types.Message, state: FSMContext):
     await state.set_state(SessionStates.waiting_for_question)
     await message.answer(text)
 
-    initial_prompt = "Есть шкалы какая и такая, тебе нужно задавать вопросы от лица психотерапевта, чтобы ты мог заполнить анкету самостоятельно, вопросы надо задавать последовательно, начиная с первого"
+    initial_prompt = f'''
+    Работай в формате живой беседы (тут убрал слово строго), чтобы клиенту было комфортно. Ты задаёшь вопросы по одному, я отвечаю. После каждого ответа и перед тем как задавать новый вопрос, ты можешь выразить поддержку, используя навыки мотивационного интервью - простые и сложные отражения, в том числе поддержать изменяющую речь в отличие от сохраняющей, аффирмации и резюмирование. Завершай каждую такую терапевтическую реплику следующим вопросом.
+    Есть 2 анкеты которые ты должен в результате заполнить, если понял, что тебе хватает данных, то верни (ответ на 1й вопрос/ответ на 2й вопрос/ответ на 3й вопрос/ответ на 4й вопрос/ответ на 5й вопрос/ответ на 6й вопрос/ответ на 7й вопрос)|(ответ на 1й вопрос/ответ на 2й вопрос/ответ на 3й вопрос/ответ на 4й вопрос/ответ на 5й вопрос/ответ на 6й вопрос/ответ на 7й вопрос/ответ на 8й вопрос/ответ на 9й вопрос). 
+    Вот анкеты которые надо по окончании заполнить: 
+    Никогда/ни разу = 0 очков, Несколько дней = 1, более половины дней/более недели = 2, почти каждый день = 3.
+                    GAD-7
+                    Инструкция
+                    Как часто за последние две недели вас беспокоили следующие проблемы?
+                    1. Нервничал(а), тревожился(ась) или был(а) раздражён(а).
+                    2. Не мог(ла) прекратить или контролировать своё беспокойство.
+                    3. Слишком много беспокоился(ась) о разных вещах.
+                    4. Было трудно расслабиться.
+                    5. Был(а) настолько беспокоен(а), что не мог(ла) усидеть на месте.
+                    6. Был(а) легко раздражим(а).
+                    7. Боялся(ась), как если бы могло случиться что-то ужасное.
+                    Конец первой анкеты
+                    PHQ-9
+                    Инструкция
+                    Как часто за последние 2 недели Вас беспокоили следующие проблемы?
+                    1. Вам не хотелось ничего делать?
+                    2. У Вас было плохое настроение, Вы были подавлены или испытывали чувство безысходности?
+                    3. Вам было трудно заснуть, у Вас был прерывистый сон, или Вы слишком много спали?
+                    4. Вы были утомлены, или у Вас было мало сил?
+                    5. У Вас был плохой аппетит, или Вы переедали?
+                    6. Вы плохо о себе думали: считали себя неудачником (неудачницей), или были в себе разочарованы, или считали, что подвели свою семью?
+                    7. Вам было трудно сосредоточиться (например, на чтении газеты или при просмотре телепередач)?
+                    8. Вы двигались или говорили настолько медленно, что окружающие это замечали? Или, наоборот, были настолько суетливы или взбудоражены, что двигались больше обычного?
+                    9. Вас посещали мысли о том, что Вам лучше было бы умереть, или о том, чтобы причинить себе какой-нибудь вред?
+    Задавай вопросы, на языке человека, с которым общаешься, для данного пользователя язык = {language}
+    '''
     await state.update_data(prompt=initial_prompt)
 
     ai_response = await send_to_ai(initial_prompt)
@@ -134,8 +113,12 @@ async def process_question(message: types.Message, state: FSMContext):
 
         file_extension = message.voice.mime_type.split('/')[-1]
 
-        model = Model(f"model-{language}")
+        if language == 'ru':
+            path = './models/vosk-model-small-ru-0.22'
+        else:
+            path = './models/vosk-model-small-en-us-0.15'
 
+        model = Model(path)
         if file_extension == 'mp3':
             user_answer = await transcribe_mp3(file_content, model)
         elif file_extension == 'wav':
