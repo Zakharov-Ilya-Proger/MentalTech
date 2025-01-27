@@ -4,6 +4,8 @@ import re
 import telebot
 from telebot import types
 from dotenv import load_dotenv
+from vosk import Model
+
 from send_to_ai import send_to_ai
 from voice_to_text import transcribe_ogg
 
