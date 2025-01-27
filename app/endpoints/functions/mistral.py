@@ -86,6 +86,6 @@ async def gmn_prompt(text_from_file):
                         больше ничего, должны быть только вот так вот оформленные ответы, нужно отвечать только на те вопросы, которые есть в опросах
                         Расшифровка интервью: {text_from_file}'''
     goge.configure(api_key=settings.GMN_API_KEY)
-    model = goge.GenerativeModel("gemini-1.5-flash")
+    model = goge.GenerativeModel("gemini-1.5-pro")
     chat_response = model.generate_content(prompt)
     return chat_response
