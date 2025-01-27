@@ -1,26 +1,36 @@
 import logging
 import os
 import re
+import sqlite3
 import telebot
 from telebot import types
 from dotenv import load_dotenv
 from vosk import Model
 from send_to_ai import send_to_ai, send_to_ai_mistral
 from voice_to_text import transcribe_ogg
-from supabase import create_client, Client
 
 load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 logging.basicConfig(level=logging.INFO)
 
 bot = telebot.TeleBot(API_TOKEN)
 
-# Подключение к Supabase
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Подключение к SQLite
+conn = sqlite3.connect('user_sessions.db')
+cursor = conn.cursor()
+
+# Удаление таблицы, если она существует, и создание новой таблицы
+cursor.execute('''
+DROP TABLE IF EXISTS user_sessions;
+CREATE TABLE user_sessions (
+    user_id INTEGER PRIMARY KEY,
+    language TEXT,
+    prompt TEXT
+)
+''')
+conn.commit()
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -36,8 +46,9 @@ def process_language_selection(call):
     language = call.data.split('_')[1]
     photo_path = './assets/Logo.png'
 
-    # Сохранение языка в Supabase
-    supabase.table('user_sessions').upsert({"user_id": user_id, "language": language}).execute()
+    # Сохранение языка в SQLite
+    cursor.execute("INSERT OR REPLACE INTO user_sessions (user_id, language) VALUES (?, ?)", (user_id, language))
+    conn.commit()
 
     if language == 'en':
         hello_text = "Welcome! I'm a MenTi bot! The guys from Mental Tech made me, my main task is to help you determine your condition unambiguously. In order for me to help you, you need to start the session) Answer a few questions and I can help you"
@@ -52,8 +63,8 @@ def process_language_selection(call):
 @bot.message_handler(commands=['session'])
 def start_session(message):
     user_id = message.from_user.id
-    response = supabase.table('user_sessions').select("language").eq('user_id', user_id).execute()
-    language = response.data[0]['language']
+    cursor.execute("SELECT language FROM user_sessions WHERE user_id = ?", (user_id,))
+    language = cursor.fetchone()[0]
 
     if language == 'en':
         text = "Let's start the session. Please answer the following questions."
@@ -62,17 +73,18 @@ def start_session(message):
 
     bot.send_message(user_id, text)
 
-    prompt = "говори на следующем языке: " + str(language)
+    prompt = "говори на языке: " + str(language)
     ai_response = send_to_ai(prompt)
     send_long_message(user_id, ai_response)
 
-    supabase.table('user_sessions').upsert({"user_id": user_id, "prompt": ""}).execute()
+    cursor.execute("INSERT OR REPLACE INTO user_sessions (user_id, prompt) VALUES (?, ?)", (user_id, ""))
+    conn.commit()
 
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
     user_id = message.from_user.id
-    response = supabase.table('user_sessions').select("language").eq('user_id', user_id).execute()
-    language = response.data[0]['language']
+    cursor.execute("SELECT language FROM user_sessions WHERE user_id = ?", (user_id,))
+    language = cursor.fetchone()[0]
 
     file_info = bot.get_file(message.voice.file_id)
     file_path = bot.download_file(file_info.file_path)
@@ -94,9 +106,10 @@ def handle_text(message):
 
 def process_answer(message, user_answer):
     user_id = message.from_user.id
-    response = supabase.table('user_sessions').select("language, prompt").eq('user_id', user_id).execute()
-    language = response.data[0]['language']
-    prompt = response.data[0]['prompt']
+    cursor.execute("SELECT language, prompt FROM user_sessions WHERE user_id = ?", (user_id,))
+    result = cursor.fetchone()
+    language = result[0]
+    prompt = result[1]
 
     full_prompt = prompt + f"\nПользователь: {user_answer}"
 
@@ -116,8 +129,10 @@ def process_answer(message, user_answer):
 
         bot.send_message(user_id, text)
 
+    # Сохраняем только ответы пользователя и вопросы от ИИ в SQLite
     prompt += f"\nПользователь: {user_answer}\nИИ: {ai_response}"
-    supabase.table('user_sessions').upsert({"user_id": user_id, "prompt": prompt}).execute()
+    cursor.execute("UPDATE user_sessions SET prompt = ? WHERE user_id = ?", (prompt, user_id))
+    conn.commit()
 
 def send_long_message(user_id, message):
     max_length = 4096
