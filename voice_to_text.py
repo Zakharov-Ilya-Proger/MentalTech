@@ -4,7 +4,7 @@ from io import BytesIO
 import soundfile as sf
 from vosk import KaldiRecognizer, Model
 
-async def transcribe_ogg(file_content: bytes, model: Model) -> str:
+def transcribe_ogg(file_content: bytes, model: Model) -> str:
     data, samplerate = sf.read(BytesIO(file_content))
     wav_buffer = BytesIO()
     sf.write(wav_buffer, data, samplerate, format='WAV')
