@@ -24,7 +24,6 @@ user_sessions = {}
 # Файл блокировки для предотвращения запуска нескольких экземпляров бота
 lock_file_path = '/tmp/telegram_bot.lock'
 
-
 def acquire_lock():
     lock_file = open(lock_file_path, 'w')
     try:
@@ -33,7 +32,6 @@ def acquire_lock():
     except IOError:
         return None
 
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup()
@@ -41,7 +39,6 @@ def send_welcome(message):
     markup.add(types.InlineKeyboardButton(text="Русский", callback_data="lang_ru"))
 
     bot.send_message(message.chat.id, "Выберите язык / Choose language:", reply_markup=markup)
-
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('lang_'))
 def process_language_selection(call):
@@ -60,7 +57,6 @@ def process_language_selection(call):
         bot.send_photo(user_id, photo, caption=hello_text)
 
     bot.answer_callback_query(call.id)
-
 
 @bot.message_handler(commands=['session'])
 def start_session(message):
@@ -112,7 +108,6 @@ def start_session(message):
     ai_response = send_to_ai(initial_prompt)
     bot.send_message(user_id, ai_response)
 
-
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
     user_id = message.from_user.id
@@ -131,12 +126,10 @@ def handle_voice(message):
 
     process_answer(message, user_answer)
 
-
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     user_answer = message.text
     process_answer(message, user_answer)
-
 
 def process_answer(message, user_answer):
     user_id = message.from_user.id
@@ -159,10 +152,8 @@ def process_answer(message, user_answer):
             text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
 
         bot.send_message(user_id, text)
-
     prompt += f"\nИИ: {ai_response}"
     user_sessions[user_id]["prompt"] = prompt
-
 
 if __name__ == '__main__':
     lock_file = acquire_lock()
