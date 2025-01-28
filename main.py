@@ -147,7 +147,8 @@ def process_answer(message, user_answer):
             }
             db.collection('sessions_results').add(session_result)
             db.collection('user_sessions').document(user_id).update({"prompt": ''})
-            bot.send_message(user_id, send_to_ai(prompt + "\nПользователь: \n Спасибо большое, ты мне очень помог", language))
+            ai_response = send_to_ai(prompt + "\nПользователь: \n Спасибо большое, ты мне очень помог, Пока", language + "А теперь тебе надо попрощаться с человеком.")
+            bot.send_message(user_id, ai_response)
             return
 
         prompt += f"\nИИ: {ai_response}"
