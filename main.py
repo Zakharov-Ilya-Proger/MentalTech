@@ -129,6 +129,7 @@ def process_answer(message, user_answer):
                 text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
             prompt += f"\nИИ: {ai_response}"
             bot.send_message(user_id, text)
+            print(ai_response)
 
             extracted_response = match.group(0)
 
