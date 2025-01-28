@@ -5,7 +5,7 @@ from bot import bot
 app = FastAPI()
 
 
-@app.post("/webhook")
+@app.post("/")
 async def webhook(request: Request):
     if request.headers.get('content-type') == 'application/json':
         json_string = await request.body()
