@@ -135,8 +135,8 @@ def process_answer(message, user_answer):
             print(extracted_response)
 
             anx, dep = extracted_response.split('|')
-            anx_total = sum([int(res) for res in anx.split('/')])
-            dep_total = sum([int(dep) for dep in dep.split('/')])
+            anx_total = sum([int(res) for res in anx[1:-1].split('/')])
+            dep_total = sum([int(dep) for dep in dep[1:-1].split('/')])
 
             session_result = {
                 "user_id": user_id,
