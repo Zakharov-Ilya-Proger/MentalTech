@@ -151,10 +151,15 @@ def process_answer(message, user_answer):
             return
 
         prompt += f"\nИИ: {ai_response}"
-        bot.send_message(user_id, ai_response)
+
+        chunks = [ai_response[i:i + 4096] for i in range(0, len(ai_response), 4096)]
+        for chunk in chunks:
+            bot.send_message(user_id, chunk)
+
         db.collection('user_sessions').document(user_id).update({"prompt": prompt})
     else:
         bot.send_message(user_id, "Please select a language first using /start")
+
 if __name__ == '__main__':
     logging.info(f"Starting bot on port {os.getenv('PORT', 8080)}")
     bot.polling()
