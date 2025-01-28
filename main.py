@@ -131,7 +131,7 @@ def process_answer(message, user_answer):
             bot.send_message(user_id, text)
             print(ai_response)
 
-            extracted_response = match.group(0)
+            extracted_response = match.group()
             print(extracted_response)
 
             anx, dep = extracted_response.split('|')
