@@ -63,11 +63,11 @@ def start_session(message):
         language = user_doc.to_dict()["lang"]
 
         if language == 'en':
-            text = "Let's start the session. Please answer the following questions."
+            text_session = "Let's start the session. Please answer the following questions."
         elif language == 'ru':
-            text = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы."
+            text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы."
 
-        bot.send_message(user_id, text)
+        bot.send_message(user_id, text_session)
 
         prompt = "говори на языке: " + language
         db.collection('user_sessions').document(user_id).update({"prompt": prompt})
@@ -149,7 +149,6 @@ def process_answer(message, user_answer):
             }
             db.collection('sessions_results').add(session_result)
             db.collection('user_sessions').document(user_id).update({"prompt": ''})
-            ai_response = send_to_ai(prompt + "\nПользователь: \n Спасибо большое, ты мне очень помог, Пока", language + "А теперь тебе надо попрощаться с человеком.")
             bot.send_message(user_id, ai_response)
             return
 
