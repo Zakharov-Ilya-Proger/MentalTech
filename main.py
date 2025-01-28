@@ -119,7 +119,7 @@ def process_answer(message, user_answer):
 
         ai_response = send_to_ai(prompt, language)
 
-        pattern = r'(\d/\d/\d/\d/\d/\d/\d\))|(\d/\d/\d/\d/\d/\d/\d/\d/\d)'
+        pattern = r'\((\d/\d/\d/\d/\d/\d/\d)\)\|\((\d/\d/\d/\d/\d/\d/\d/\d/\d)\)'
         match = re.search(pattern, ai_response)
 
         if match:
