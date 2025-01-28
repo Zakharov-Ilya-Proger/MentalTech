@@ -132,6 +132,7 @@ def process_answer(message, user_answer):
             print(ai_response)
 
             extracted_response = match.group(0)
+            print(extracted_response)
 
             anx, dep = extracted_response.split('|')
             anx_total = sum([int(res) for res in anx.split('/')])
