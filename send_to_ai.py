@@ -7,9 +7,9 @@ load_dotenv()
 def send_to_ai(prompt: str, lang: str) -> str:
     goge.configure(api_key=os.getenv("GMN_API_KEY"))
     generation_config = {
-      "temperature": 0.5,
+      "temperature": 0.55,
       "top_p": 0.65,
-      "top_k": 70,
+      "top_k": 75,
       "max_output_tokens": 65536,
       "response_mime_type": "text/plain",
     }
