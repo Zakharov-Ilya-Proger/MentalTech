@@ -42,8 +42,10 @@ def process_language_selection(call):
 
     if language == 'en-US':
         hello_text = "Welcome! I'm a MenTi bot! The guys from Mental Tech made me, my main task is to help you determine your condition unambiguously. In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
-    elif language == 'ru-Ru':
+    elif language == 'ru-RU':
         hello_text = "Добро пожаловать! Я MenTi бот! Меня создали ребята из MentalTech, моя главная задача - помочь вам однозначно определить свое состояние. Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
+    else:
+        hello_text = "Language not supported"
 
     with open(photo_path, 'rb') as photo:
         bot.send_photo(user_id, photo, caption=hello_text)
@@ -81,15 +83,10 @@ def handle_voice(message):
         language = user_doc.to_dict()["lang"]
         file_info = bot.get_file(message.voice.file_id)
         file_path = bot.download_file(file_info.file_path)
-        # if language == 'ru':
-        #     path = './models/vosk-model-small-ru-0.22'
-        # else:
-        #     path = './models/vosk-model-small-en-us-0.15'
-        #
-        # model = Model(path)
+
         user_answer = transcribe_ogg_sr(file_path, language)
         if user_answer == "":
-            if language == 'ru-Ru':
+            if language == 'ru-RU':
                 answer = "Напишите текстом или перезапишите голосовое)"
             else:
                 answer = "Write in text or overwrite the voice message)"
@@ -156,3 +153,7 @@ def process_answer(message, user_answer):
         db.collection('user_sessions').document(user_id).update({"prompt": prompt})
     else:
         bot.send_message(user_id, "Please select a language first using /start")
+
+if __name__ == '__main__':
+    bot.remove_webhook()
+    bot.polling()
