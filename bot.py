@@ -7,9 +7,8 @@ import firebase_admin
 from dotenv import load_dotenv
 from firebase_admin import credentials, firestore
 from telebot import types
-from vosk import Model
 from send_to_ai import send_to_ai
-from voice_to_text import transcribe_ogg, transcribe_ogg_sr
+from voice_to_text import transcribe_ogg_sr
 
 load_dotenv()
 
@@ -85,7 +84,6 @@ def handle_voice(message):
         file_path = bot.download_file(file_info.file_path)
 
         user_answer = transcribe_ogg_sr(file_path, language)
-        bot.send_message(user_id, user_answer)
         if user_answer == "":
             if language == 'ru-RU':
                 answer = "Напишите текстом или перезапишите голосовое)"
