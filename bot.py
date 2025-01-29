@@ -62,9 +62,9 @@ def start_session(message):
         language = user_doc.to_dict()["lang"]
 
         if language == 'en-US':
-            text_session = "Let's start the session. Please answer the following questions."
+            text_session = "Let's start the session. Please answer the following questions. The answer can be given either by text or by voice message!"
         elif language == 'ru-RU':
-            text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы."
+            text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы. Ответ можно дать как текстом, так и голосовым сообщением!"
 
         bot.send_message(user_id, text_session)
 
