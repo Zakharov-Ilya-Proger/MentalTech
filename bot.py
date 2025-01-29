@@ -10,6 +10,7 @@ from firebase_admin import credentials, firestore
 from telebot import types
 from send_to_ai import send_to_ai
 from voice_to_text import transcribe_ogg_sr
+from find_result import extract_results
 
 load_dotenv()
 
@@ -112,24 +113,22 @@ def process_answer(message, user_answer):
 
         ai_response = send_to_ai(prompt, language)
 
-        pattern = r'\((\d/\d/\d/\d/\d/\d/\d)\)\|\((\d/\d/\d/\d/\d/\d/\d/\d/\d)\)'
-        match = re.search(pattern, ai_response)
+        pattern1 =  r'(\d/\d/\d/\d/\d/\d/\d)'
+        pattern2 = r'(\d/\d/\d/\d/\d/\d/\d/\d/\d)'
+        match1 = re.search(pattern1, ai_response)
+        match2 = re.search(pattern2, ai_response)
 
-        if match:
+        if match1 and match2:
             if language == 'en-US':
                 text = "Thank you for your answers! Based on your responses, here are some recommendations."
             else:
                 text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
             prompt += f"\nИИ: {ai_response}"
             bot.send_message(user_id, text)
-            print(ai_response)
 
-            extracted_response = match.group()
-            print(extracted_response)
-
-            anx, dep = extracted_response.split('|')
-            anx_total = sum([int(res) for res in anx[1:-1].split('/')])
-            dep_total = sum([int(dep) for dep in dep[1:-1].split('/')])
+            anx, dep = extract_results(ai_response)
+            anx_total = sum([int(res) for res in anx.split('/')])
+            dep_total = sum([int(dep) for dep in dep.split('/')])
 
             session_result = {
                 "user_id": user_id,
