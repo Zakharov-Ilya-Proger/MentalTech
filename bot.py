@@ -32,7 +32,6 @@ def send_welcome(message):
 def process_language_selection(call):
     user_id = str(call.from_user.id)
     language = call.data.split('_')[1]
-    photo_path = './assets/Logo.png'
 
     db.collection('user_sessions').document(user_id).set({
         "lang": language,
@@ -40,14 +39,13 @@ def process_language_selection(call):
     })
 
     if language == 'en-US':
-        hello_text = "Welcome! I'm a MenTi bot! The guys from Mental Tech made me, my main task is to help you determine your condition unambiguously. In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
+        hello_text = "In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
     elif language == 'ru-RU':
-        hello_text = "Добро пожаловать! Я MenTi бот! Меня создали ребята из MentalTech, моя главная задача - помочь вам однозначно определить свое состояние. Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
+        hello_text = "Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
     else:
         hello_text = "Language not supported"
 
-    with open(photo_path, 'rb') as photo:
-        bot.send_photo(user_id, photo, caption=hello_text)
+    bot.send_message(text=hello_text, chat_id=user_id)
 
     bot.answer_callback_query(call.id)
 
