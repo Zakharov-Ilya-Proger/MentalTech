@@ -113,8 +113,8 @@ def process_answer(message, user_answer):
 
         ai_response = send_to_ai(prompt, language)
 
-        pattern1 =  r"GAD-7:\s*(\d/\d/\d/\d/\d/\d/\d)"
-        pattern2 = r"BMW-9:\s*(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
+        pattern1 =  r"GAD-7:\*+\s(\d/\d/\d/\d/\d/\d/\d)"
+        pattern2 = r"DDD-9:\*+\s(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
         match1 = re.search(pattern1, ai_response)
         match2 = re.search(pattern2, ai_response)
 
