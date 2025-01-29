@@ -40,9 +40,9 @@ def process_language_selection(call):
         "prompt": ""
     })
 
-    if language == 'en':
+    if language == 'en-US':
         hello_text = "Welcome! I'm a MenTi bot! The guys from Mental Tech made me, my main task is to help you determine your condition unambiguously. In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
-    elif language == 'ru':
+    elif language == 'ru-Ru':
         hello_text = "Добро пожаловать! Я MenTi бот! Меня создали ребята из MentalTech, моя главная задача - помочь вам однозначно определить свое состояние. Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
 
     with open(photo_path, 'rb') as photo:
@@ -57,9 +57,9 @@ def start_session(message):
     if user_doc.exists:
         language = user_doc.to_dict()["lang"]
 
-        if language == 'en':
+        if language == 'en-US':
             text_session = "Let's start the session. Please answer the following questions."
-        elif language == 'ru':
+        elif language == 'ru-RU':
             text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы."
 
         bot.send_message(user_id, text_session)
@@ -118,7 +118,7 @@ def process_answer(message, user_answer):
         match = re.search(pattern, ai_response)
 
         if match:
-            if language == 'en':
+            if language == 'en-US':
                 text = "Thank you for your answers! Based on your responses, here are some recommendations."
             else:
                 text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
