@@ -10,3 +10,5 @@ tinydb~=4.8.2
 firebase-admin~=6.6.0
 uvicorn~=0.34.0
 fastapi~=0.115.6
+SpeechRecognition~=3.8.1
+pydub~=0.25.1

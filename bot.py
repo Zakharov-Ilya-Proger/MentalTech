@@ -9,7 +9,7 @@ from firebase_admin import credentials, firestore
 from telebot import types
 from vosk import Model
 from send_to_ai import send_to_ai
-from voice_to_text import transcribe_ogg
+from voice_to_text import transcribe_ogg, transcribe_ogg_sr
 
 load_dotenv()
 
@@ -24,8 +24,8 @@ db = firestore.client()
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton(text="English", callback_data="lang_en"))
-    markup.add(types.InlineKeyboardButton(text="Русский", callback_data="lang_ru"))
+    markup.add(types.InlineKeyboardButton(text="English", callback_data="lang_en-US"))
+    markup.add(types.InlineKeyboardButton(text="Русский", callback_data="lang_ru-RU"))
 
     bot.send_message(message.chat.id, "Выберите язык / Choose language:", reply_markup=markup)
 
@@ -81,15 +81,15 @@ def handle_voice(message):
         language = user_doc.to_dict()["lang"]
         file_info = bot.get_file(message.voice.file_id)
         file_path = bot.download_file(file_info.file_path)
-        if language == 'ru':
-            path = './models/vosk-model-small-ru-0.22'
-        else:
-            path = './models/vosk-model-small-en-us-0.15'
-
-        model = Model(path)
-        user_answer = transcribe_ogg(file_path, model)
+        # if language == 'ru':
+        #     path = './models/vosk-model-small-ru-0.22'
+        # else:
+        #     path = './models/vosk-model-small-en-us-0.15'
+        #
+        # model = Model(path)
+        user_answer = transcribe_ogg_sr(file_path, language)
         if user_answer == "":
-            if language == 'ru':
+            if language == 'ru-Ru':
                 answer = "Напишите текстом или перезапишите голосовое)"
             else:
                 answer = "Write in text or overwrite the voice message)"
