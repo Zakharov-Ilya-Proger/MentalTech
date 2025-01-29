@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from datetime import datetime
 import re
@@ -14,6 +15,9 @@ load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
 bot = telebot.TeleBot(API_TOKEN)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
 cred = credentials.Certificate(json.loads(firebase_credentials))
@@ -150,7 +154,3 @@ def process_answer(message, user_answer):
         db.collection('user_sessions').document(user_id).update({"prompt": prompt})
     else:
         bot.send_message(user_id, "Please select a language first using /start")
-
-if __name__ == '__main__':
-    bot.remove_webhook()
-    bot.polling()
