@@ -9,7 +9,7 @@ def send_to_ai(prompt: str, lang: str) -> str:
     generation_config = {
       "temperature": 0.5,
       "top_p": 0.65,
-      "top_k": 60,
+      "top_k": 70,
       "max_output_tokens": 65536,
       "response_mime_type": "text/plain",
     }
