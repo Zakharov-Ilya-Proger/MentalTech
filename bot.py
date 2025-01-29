@@ -125,6 +125,7 @@ def process_answer(message, user_answer):
                 text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
             prompt += f"\nИИ: {ai_response}"
             bot.send_message(user_id, text)
+            bot.send_message(user_id, ai_response)
 
             anx, dep = extract_results(ai_response)
             anx_total = sum([int(res) for res in anx.split('/')])
@@ -141,7 +142,6 @@ def process_answer(message, user_answer):
             }
             db.collection('sessions_results').add(session_result)
             db.collection('user_sessions').document(user_id).update({"prompt": ''})
-            bot.send_message(user_id, ai_response)
             return
 
         prompt += f"\nИИ: {ai_response}"
