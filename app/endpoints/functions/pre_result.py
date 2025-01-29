@@ -2,7 +2,7 @@ from io import BytesIO
 from docx import Document
 from fastapi import HTTPException
 from vosk import Model
-from app.endpoints.functions.mistral import send_prompt, gmn_prompt
+from app.endpoints.functions.gmn import gmn_prompt
 from app.endpoints.functions.wav_mp3 import wav, mp3
 
 
