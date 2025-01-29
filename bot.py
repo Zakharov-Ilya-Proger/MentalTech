@@ -85,6 +85,7 @@ def handle_voice(message):
         file_path = bot.download_file(file_info.file_path)
 
         user_answer = transcribe_ogg_sr(file_path, language)
+        print(user_answer)
         if user_answer == "":
             if language == 'ru-RU':
                 answer = "Напишите текстом или перезапишите голосовое)"
