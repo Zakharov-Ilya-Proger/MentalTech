@@ -113,16 +113,16 @@ def process_answer(message, user_answer):
 
         ai_response = send_to_ai(prompt, language)
 
-        pattern1 =  r"GAD-7:\*+\s(\d/\d/\d/\d/\d/\d/\d)"
-        pattern2 = r"DDD-9:\*+\s(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
+        pattern1 =  r"GAD-7:\s(\d/\d/\d/\d/\d/\d/\d)"
+        pattern2 = r"PHQ-9:\s(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
         match1 = re.search(pattern1, ai_response)
         match2 = re.search(pattern2, ai_response)
 
         if match1 and match2:
             if language == 'en-US':
-                text = "Thank you for your answers! Based on your responses, here are some recommendations."
+                text = "Thank you for your answers! The results will be ready now..."
             else:
-                text = "Спасибо за ваши ответы! На основе ваших ответов, вот несколько рекомендаций."
+                text = "Спасибо за ваши ответы! Сейчас будут готовы результаты..."
             prompt += f"\nИИ: {ai_response}"
             bot.send_message(user_id, text)
             bot.send_message(user_id, ai_response)
@@ -142,14 +142,13 @@ def process_answer(message, user_answer):
             }
             db.collection('sessions_results').add(session_result)
             db.collection('user_sessions').document(user_id).update({"prompt": ''})
-            return
+        else:
+            prompt += f"\nИИ: {ai_response}"
 
-        prompt += f"\nИИ: {ai_response}"
+            chunks = [ai_response[i:i + 4096] for i in range(0, len(ai_response), 4096)]
+            for chunk in chunks:
+                bot.send_message(user_id, chunk)
 
-        chunks = [ai_response[i:i + 4096] for i in range(0, len(ai_response), 4096)]
-        for chunk in chunks:
-            bot.send_message(user_id, chunk)
-
-        db.collection('user_sessions').document(user_id).update({"prompt": prompt})
+            db.collection('user_sessions').document(user_id).update({"prompt": prompt})
     else:
         bot.send_message(user_id, "Please select a language first using /start")
