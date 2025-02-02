@@ -1,7 +1,5 @@
 # Q-bot: Your Virtual Psychologist in Telegram
 
-![Q-bot Logo](imgs/Logo.jpg)
-
 ## About the Project
 
 Q-bot is an innovative Telegram bot developed by the MentalTech team. Our bot helps users go through a psychological interview and fill out depression and anxiety questionnaires. Based on the collected data, Q-bot automatically fills out the questionnaires on behalf of the user, providing valuable information for further analysis and support.
@@ -18,14 +16,6 @@ Q-bot is an innovative Telegram bot developed by the MentalTech team. Our bot he
 1. **Add Q-bot to Telegram**: Find our bot by the name @MentalTechAIBot and click "Start".
 2. **Complete the Interview**: Follow the bot's instructions and answer the questions.
 3. **Get Results**: Q-bot will automatically fill out the questionnaires and provide you with the results.
-
-## Examples of Work
-
-![Interview Example](imgs/example1.jpg)
-*Example of psychological interview questions*
-
-![Form Example](imgs/example2.jpg)
-*Example of a filled-out questionnaire*
 
 ## Technologies
 
@@ -59,6 +49,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 Thank you for using Q-bot! We hope our bot helps you better understand your psychological state and get the support you need.
-
-*MentalTech Team*
-![Our Team](imgs/team.png)
