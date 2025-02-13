@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/q_bot/mental_q_bot
+            cd /home/q_bot/mental_q_bot/MentalTech
             git fetch origin
             git reset --hard origin/telegram  # Указываем ветку
             sudo docker build -t mental_q_bot .
