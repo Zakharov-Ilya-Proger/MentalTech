@@ -4,15 +4,9 @@ on:
   push:
     branches:
       - telegram  # Указываем ветку, которую нужно отслеживать
-  pull_request:
-    types:
-      - closed
-    branches:
-      - telegram  # Указываем ветку, которую нужно отслеживать
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true  # Только если PR был принят
     runs-on: ubuntu-latest
 
     steps:
