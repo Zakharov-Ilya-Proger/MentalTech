@@ -45,7 +45,7 @@ async def send_welcome(message: types.Message):
     builder.add(InlineKeyboardButton(text="English", callback_data="lang_en-US"))
     builder.add(InlineKeyboardButton(text="Русский", callback_data="lang_ru-RU"))
 
-    await message.answer("Выберите языки / Choose languages:", reply_markup=builder.as_markup())
+    await message.answer("Выберите язык / Choose languages:", reply_markup=builder.as_markup())
 
 # Обработчик callback-запросов
 @router.callback_query(lambda call: call.data.startswith("lang_") or call.data.startswith("model_"))
