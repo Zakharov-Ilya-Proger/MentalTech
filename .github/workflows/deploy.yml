@@ -1,0 +1,35 @@
+name: Deploy Bot
+
+on:
+  push:
+    branches:
+      - telegram  # Указываем ветку, которую нужно отслеживать
+  pull_request:
+    types:
+      - closed
+    branches:
+      - telegram  # Указываем ветку, которую нужно отслеживать
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true  # Только если PR был принят
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: telegram  # Указываем ветку
+
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/q_bot/mental_q_bot
+            git fetch origin
+            git reset --hard origin/telegram  # Указываем ветку
+            sudo docker build -t mental_q_bot .
+            sudo systemctl restart q_bot.service
