@@ -16,20 +16,17 @@ from send_to_ai import use_send_to_ai
 from voice_to_text import transcribe_ogg_sr
 from find_result import extract_results
 
-# Загрузка переменных окружения
 load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = os.getenv("WEBHOOK_URL") + WEBHOOK_PATH
 
-# Инициализация Firebase
 firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
 cred = credentials.Certificate(json.loads(firebase_credentials))
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-# Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 router = Router()
@@ -61,7 +58,7 @@ async def callback_query(call: types.CallbackQuery):
         })
 
         builder = InlineKeyboardBuilder()
-        builder.add(InlineKeyboardButton(text="Mistral", callback_data=f"model_mstrl"))
+        builder.add(InlineKeyboardButton(text="GPT-4o", callback_data=f"model_gpt"))
 
         await call.message.edit_text("Выберите модель / Choose model:", reply_markup=builder.as_markup())
     elif call.data.startswith("model_"):
