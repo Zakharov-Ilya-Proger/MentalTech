@@ -7,3 +7,4 @@ mistralai~=1.5.0
 SpeechRecognition~=3.8.1
 pydub~=0.25.1
 langchain-community~=0.3.17
+openai~=1.63.2

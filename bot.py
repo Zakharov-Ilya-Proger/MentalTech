@@ -101,7 +101,7 @@ async def callback_query(call: types.CallbackQuery):
 @router.message(Command("model"))
 async def change_model(message: types.Message):
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text="Mistral", callback_data=f"model_mstrl"))
+    builder.add(InlineKeyboardButton(text="GPT-4o", callback_data=f"gpt_mstrl"))
 
     await message.answer("Выберите модель / Choose model:", reply_markup=builder.as_markup())
 
@@ -210,4 +210,5 @@ async def process_answer(message: types.Message, user_answer: str):
         await message.answer("Please select a language first using /start")
 
 if __name__ == "__main__":
+    bot.delete_webhook()
     dp.run_polling(bot, skip_updates=True)
