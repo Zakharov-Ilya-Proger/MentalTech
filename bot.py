@@ -12,7 +12,7 @@ from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 
 from diagnoz import result_anx_dep
-from send_to_ai import use_send_to_ai
+from send_to_ai import use_send_to_ai, send_to_webAI_servic
 from voice_to_text import transcribe_ogg_sr
 from find_result import extract_results
 
@@ -35,7 +35,7 @@ dp.include_router(router)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Обработчик команды /start
+
 @router.message(Command("start"))
 async def send_welcome(message: types.Message):
     builder = InlineKeyboardBuilder()
@@ -44,7 +44,7 @@ async def send_welcome(message: types.Message):
 
     await message.answer("Выберитее языки / Choose language:", reply_markup=builder.as_markup())
 
-# Обработчик callback-запросов
+
 @router.callback_query(lambda call: call.data.startswith("lang_") or call.data.startswith("model_"))
 async def callback_query(call: types.CallbackQuery):
     if call.data.startswith("lang_"):
@@ -97,7 +97,7 @@ async def callback_query(call: types.CallbackQuery):
         call_back = "Oops, something went wrong."
         await call.answer(call_back)
 
-# Обработчик команды /model
+
 @router.message(Command("model"))
 async def change_model(message: types.Message):
     builder = InlineKeyboardBuilder()
@@ -105,7 +105,7 @@ async def change_model(message: types.Message):
 
     await message.answer("Выберите модель / Choose model:", reply_markup=builder.as_markup())
 
-# Обработчик команды /session
+
 @router.message(Command("session"))
 async def start_session(message: types.Message):
     user_id = str(message.from_user.id)
@@ -113,22 +113,20 @@ async def start_session(message: types.Message):
     db.collection('user_sessions').document(user_id).update({"prompt": ''})
     if user_doc.exists:
         language = user_doc.to_dict()["lang"]
-        model = user_doc.to_dict()["model"]
         if language == 'en-US':
             text_session = "Let's start the session. Please answer the following questions. The answer can be given either by text or by voice message!"
         elif language == 'ru-RU':
             text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы. Ответ можно дать как текстом, так и голосовым сообщением!"
 
         await message.answer(text_session)
-
         prompt = ""
-        ai_response = await use_send_to_ai(prompt, language, model)
+        ai_response = await send_to_webAI_servic(user_id)
         db.collection('user_sessions').document(user_id).update({"prompt": prompt + "\nИИ:\n" + str(ai_response)})
         await message.answer(ai_response)
     else:
         await message.answer("Please select a language first using /start")
 
-# Обработчик голосовых сообщений
+
 @router.message(lambda message: message.voice)
 async def handle_voice(message: types.Message):
     user_id = str(message.from_user.id)
@@ -150,23 +148,23 @@ async def handle_voice(message: types.Message):
     else:
         await message.answer("Please select a language first using /start")
 
-# Обработчик текстовых сообщений
+
 @router.message()
 async def handle_text(message: types.Message):
     user_answer = message.text
     await process_answer(message, user_answer)
 
-# Функция обработки ответа пользователя
+
 async def process_answer(message: types.Message, user_answer: str):
     user_id = str(message.from_user.id)
     user_doc = db.collection('user_sessions').document(user_id).get()
     if user_doc.exists:
         prompt = user_doc.to_dict()["prompt"]
         prompt += f"\nПользователь: {user_answer}"
+        db.collection('user_sessions').document(user_id).update({"prompt": prompt})
         language = user_doc.to_dict()["lang"]
-        model = user_doc.to_dict()["model"]
 
-        ai_response = await use_send_to_ai(prompt, language, model)
+        ai_response = await send_to_webAI_servic(user_id)
 
         pattern1 =  r"GAD-7:\s(\d/\d/\d/\d/\d/\d/\d)"
         pattern2 = r"PHQ-9:\s(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
