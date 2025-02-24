@@ -1,9 +1,12 @@
+from sqlalchemy.util import await_only
+
+
 async def result_anx_dep(total_anx, total_dep, lang):
     answer = ''
     if lang == 'ru-RU':
-        answer += f"Финальный результат по шкале тревожности: {total_anx}\n Статус тревожности: {await anx_result(total_anx, 'ru-Ru')}\nФинальный результат по шкале депрессии: {total_dep}\n Статус депрессии: {dep_result(total_dep, 'ru-Ru')}\n"
+        answer += f"Финальный результат по шкале тревожности: {total_anx}\n Статус тревожности: {await anx_result(total_anx, 'ru-Ru')}\nФинальный результат по шкале депрессии: {total_dep}\n Статус депрессии: {await dep_result(total_dep, 'ru-Ru')}\n"
     else:
-        answer += f"Final result on the anxiety scale: {total_anx}\n Anxiety status: {await anx_result(total_anx, 'en-Us')}\nFinal result on the depression scale: {total_dep}\n Depression status: {dep_result(total_dep, 'en-Us')}\n"
+        answer += f"Final result on the anxiety scale: {total_anx}\n Anxiety status: {await anx_result(total_anx, 'en-Us')}\nFinal result on the depression scale: {total_dep}\n Depression status: {await dep_result(total_dep, 'en-Us')}\n"
     return answer
 
 async def anx_result(total_anx, lang):

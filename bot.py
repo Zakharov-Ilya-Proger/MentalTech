@@ -12,7 +12,7 @@ from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 
 from diagnoz import result_anx_dep
-from send_to_ai import use_send_to_ai, send_to_webAI_servic
+from send_to_ai import send_to_webAI_servic
 from voice_to_text import transcribe_ogg_sr
 from find_result import extract_results
 
