@@ -12,7 +12,7 @@ from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 
 from diagnoz import result_anx_dep
-from send_to_ai import send_to_webAI_servic
+from send_to_ai import send_to_web_ai_service
 from voice_to_text import transcribe_ogg_sr
 from find_result import extract_results
 
@@ -45,65 +45,27 @@ async def send_welcome(message: types.Message):
     await message.answer("Выберитее языки / Choose language:", reply_markup=builder.as_markup())
 
 
-@router.callback_query(lambda call: call.data.startswith("lang_") or call.data.startswith("model_"))
+@router.callback_query(lambda call: call.data.startswith("lang_"))
 async def callback_query(call: types.CallbackQuery):
-    if call.data.startswith("lang_"):
-        user_id = str(call.from_user.id)
-        language = call.data.split('_')[1]
+    user_id = str(call.from_user.id)
+    language = call.data.split('_')[1]
 
-        db.collection('user_sessions').document(user_id).set({
-            "lang": language,
-            "model": "",
-            "prompt": ""
-        })
-
-        builder = InlineKeyboardBuilder()
-        builder.add(InlineKeyboardButton(text="GPT-4o", callback_data=f"model_gpt"))
-
-        await call.message.edit_text("Выберите модель / Choose model:", reply_markup=builder.as_markup())
-    elif call.data.startswith("model_"):
-        user_doc = db.collection('user_sessions').document(str(call.from_user.id)).get()
-        model_ = user_doc.to_dict()["model"] == ''
-        model = call.data.split('_')[1]
-        db.collection('user_sessions').document(str(call.from_user.id)).update({
-            "model": model
-        })
-        user_id = str(call.from_user.id)
-        user_doc = db.collection('user_sessions').document(user_id).get()
-        language = user_doc.to_dict()["lang"]
-        if not model_:
-            if language == 'en-US':
-                call_back = "Great!! The model has been changed, let's get started!"
-            elif language == 'ru-RU':
-                call_back = "Отлично!! Модель изменена, приступим!"
-            db.collection('user_sessions').document(str(call.from_user.id)).update({
-                "model": model
-            })
-            await call.answer(call_back)
-            return
-
-        if language == 'en-US':
-            hello_text = "In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
-            call_back = "Great!! The setup is done, let's get started!"
-        elif language == 'ru-RU':
-            call_back = "Отлично!! Настройка произведена, приступим!"
-            hello_text = "Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
-        else:
-            call_back = "Oops, something went wrong."
-            hello_text = "Language not supported"
-        await call.answer(call_back)
-        await call.message.answer(hello_text)
+    db.collection('user_sessions').document(user_id).set({
+        "lang": language,
+        "prompt": ""
+    })
+    await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+    if language == 'en-US':
+        hello_text = "In order for me to help you, you need to start the session) Answer a few questions and I can help you) Let's start /session ?"
+        call_back = "Great!! The setup is done, let's get started!"
+    elif language == 'ru-RU':
+        call_back = "Отлично!! Настройка произведена, приступим!"
+        hello_text = "Чтобы я мог вам помочь, нужно начать сеанс) Ответьте на несколько вопросов, и я смогу вам помочь) Начнем /session ?"
     else:
         call_back = "Oops, something went wrong."
-        await call.answer(call_back)
-
-
-@router.message(Command("model"))
-async def change_model(message: types.Message):
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text="GPT-4o", callback_data=f"gpt_mstrl"))
-
-    await message.answer("Выберите модель / Choose model:", reply_markup=builder.as_markup())
+        hello_text = "Language not supported"
+    await call.answer(call_back)
+    await call.message.answer(hello_text)
 
 
 @router.message(Command("session"))
@@ -114,13 +76,13 @@ async def start_session(message: types.Message):
     if user_doc.exists:
         language = user_doc.to_dict()["lang"]
         if language == 'en-US':
-            text_session = "Let's start the session. Please answer the following questions. The answer can be given either by text or by voice message!"
+            text_session = "Please answer the following questions. The answer can be given either by text or by voice message!"
         elif language == 'ru-RU':
-            text_session = "Начнем сеанс. Пожалуйста, ответьте на следующие вопросы. Ответ можно дать как текстом, так и голосовым сообщением!"
+            text_session = "Пожалуйста, ответьте на следующие вопросы. Ответ можно дать как текстом, так и голосовым сообщением!"
 
         await message.answer(text_session)
         prompt = ""
-        ai_response = await send_to_webAI_servic(user_id)
+        ai_response = await send_to_web_ai_service(user_id)
         db.collection('user_sessions').document(user_id).update({"prompt": prompt + "\nИИ:\n" + str(ai_response)})
         await message.answer(ai_response)
     else:
@@ -164,9 +126,9 @@ async def process_answer(message: types.Message, user_answer: str):
         db.collection('user_sessions').document(user_id).update({"prompt": prompt})
         language = user_doc.to_dict()["lang"]
 
-        ai_response = await send_to_webAI_servic(user_id)
+        ai_response = await send_to_web_ai_service(user_id)
 
-        pattern1 =  r"GAD-7:\s(\d/\d/\d/\d/\d/\d/\d)"
+        pattern1 = r"GAD-7:\s(\d/\d/\d/\d/\d/\d/\d)"
         pattern2 = r"PHQ-9:\s(\d/\d/\d/\d/\d/\d/\d/\d/\d)"
         match1 = re.search(pattern1, ai_response)
         match2 = re.search(pattern2, ai_response)
@@ -206,6 +168,7 @@ async def process_answer(message: types.Message, user_answer: str):
             db.collection('user_sessions').document(user_id).update({"prompt": prompt})
     else:
         await message.answer("Please select a language first using /start")
+
 
 if __name__ == "__main__":
     bot.delete_webhook()
