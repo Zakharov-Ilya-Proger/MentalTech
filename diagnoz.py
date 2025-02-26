@@ -1,4 +1,3 @@
-from sqlalchemy.util import await_only
 
 
 async def result_anx_dep(total_anx, total_dep, lang):
